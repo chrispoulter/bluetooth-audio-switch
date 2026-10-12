@@ -1,6 +1,6 @@
 <Solution>
   <Folder Name="/Solution Items/">
-    <File Path=".csharpierrc.json" />
+    <File Path=".csharpierrc" />
     <File Path=".gitignore" />
     <File Path="dotnet-tools.json" />
     <File Path="LICENSE" />
