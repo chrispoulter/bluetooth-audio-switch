@@ -34,7 +34,14 @@ internal static class ShellLink
 {
     private const int SwShowMinNoActive = 7;
 
-    public static void Create(string shortcutPath, string targetPath, string arguments, string description, string iconPath, int iconIndex)
+    public static void Create(
+        string shortcutPath,
+        string targetPath,
+        string arguments,
+        string description,
+        string iconPath,
+        int iconIndex
+    )
     {
         var link = (IShellLinkW)new ShellLinkCoClass();
         try

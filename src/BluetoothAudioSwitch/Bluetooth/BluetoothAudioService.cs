@@ -22,25 +22,30 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
     {
         var endpoints = GetBluetoothAudioEndpoints();
 
-        var paired = await DeviceInformation.FindAllAsync(
-            WinRtBluetoothDevice.GetDeviceSelectorFromPairingState(true),
-            [IsConnectedProperty, ContainerIdProperty],
-            DeviceInformationKind.AssociationEndpoint).AsTask(cancellationToken);
+        var paired = await DeviceInformation
+            .FindAllAsync(
+                WinRtBluetoothDevice.GetDeviceSelectorFromPairingState(true),
+                [IsConnectedProperty, ContainerIdProperty],
+                DeviceInformationKind.AssociationEndpoint
+            )
+            .AsTask(cancellationToken);
 
         var devices = new List<PairedDevice>();
         var claimed = new HashSet<AudioEndpoint>();
 
         foreach (var info in paired)
         {
-            var containerId = info.Properties.TryGetValue(ContainerIdProperty, out var c) && c is Guid g ? g : (Guid?)null;
+            var containerId =
+                info.Properties.TryGetValue(ContainerIdProperty, out var c) && c is Guid g ? g : (Guid?)null;
             var deviceEndpoints = containerId is null
                 ? []
                 : endpoints.Where(e => e.ContainerId == containerId).ToList();
             claimed.UnionWith(deviceEndpoints);
 
-            var isConnected = info.Properties.TryGetValue(IsConnectedProperty, out var ic) && ic is bool b
-                ? b
-                : deviceEndpoints.Any(e => e.IsActive);
+            var isConnected =
+                info.Properties.TryGetValue(IsConnectedProperty, out var ic) && ic is bool b
+                    ? b
+                    : deviceEndpoints.Any(e => e.IsActive);
 
             devices.Add(new PairedDevice(info.Name, isConnected, FilterIds(deviceEndpoints)));
         }
@@ -108,8 +113,9 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
         if (succeeded == 0)
         {
             throw new BluetoothAudioException(
-                $"Windows rejected the request for '{device.Name}' (HRESULT {string.Join(", ", errors.Distinct())}). " +
-                "Make sure the device is switched on and in range.");
+                $"Windows rejected the request for '{device.Name}' (HRESULT {string.Join(", ", errors.Distinct())}). "
+                    + "Make sure the device is switched on and in range."
+            );
         }
     }
 
@@ -166,14 +172,13 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
 
     // Classic Bluetooth audio filters live under BTHENUM (A2DP) or BTHHFENUM (Hands-Free).
     private static bool IsBluetoothFilter(string filterId) =>
-        filterId.Contains(@"\\?\bthenum", StringComparison.OrdinalIgnoreCase) ||
-        filterId.Contains(@"\\?\bthhfenum", StringComparison.OrdinalIgnoreCase);
+        filterId.Contains(@"\\?\bthenum", StringComparison.OrdinalIgnoreCase)
+        || filterId.Contains(@"\\?\bthhfenum", StringComparison.OrdinalIgnoreCase);
 
     private static string? ReadString(IPropertyStore store, PropertyKey key) =>
         ReadValue(store, key, v => v.AsString());
 
-    private static Guid? ReadGuid(IPropertyStore store, PropertyKey key) =>
-        ReadValue(store, key, v => v.AsGuid());
+    private static Guid? ReadGuid(IPropertyStore store, PropertyKey key) => ReadValue(store, key, v => v.AsGuid());
 
     private static T? ReadValue<T>(IPropertyStore store, PropertyKey key, Func<PropVariant, T?> read)
     {

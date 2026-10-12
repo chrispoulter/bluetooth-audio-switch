@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <AssemblyName>btaudio</AssemblyName>
@@ -15,5 +14,4 @@
   <ItemGroup>
     <InternalsVisibleTo Include="BluetoothAudioSwitch.Tests" />
   </ItemGroup>
-
 </Project>

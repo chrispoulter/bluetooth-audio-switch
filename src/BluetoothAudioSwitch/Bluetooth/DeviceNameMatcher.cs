@@ -86,6 +86,5 @@ internal static class DeviceNameMatcher
         return builder.ToString().TrimEnd();
     }
 
-    private static string[] Words(string normalized) =>
-        normalized.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    private static string[] Words(string normalized) => normalized.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 }

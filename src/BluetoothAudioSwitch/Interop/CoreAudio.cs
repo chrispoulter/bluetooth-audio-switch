@@ -41,8 +41,7 @@ internal struct PropVariant
     private const ushort VT_LPWSTR = 31;
     private const ushort VT_CLSID = 72;
 
-    public readonly string? AsString() =>
-        VarType == VT_LPWSTR ? Marshal.PtrToStringUni(Value) : null;
+    public readonly string? AsString() => VarType == VT_LPWSTR ? Marshal.PtrToStringUni(Value) : null;
 
     public readonly Guid? AsGuid() =>
         VarType == VT_CLSID && Value != IntPtr.Zero ? Marshal.PtrToStructure<Guid>(Value) : null;
@@ -61,7 +60,10 @@ internal static class PropertyKeys
     private static readonly Guid DeviceProperties = new("a45c254e-df1c-4efd-8020-67d146a850e0");
 
     public static readonly PropertyKey DeviceFriendlyName = new(DeviceProperties, 14);
-    public static readonly PropertyKey DeviceInterfaceFriendlyName = new(new Guid("026e516e-b814-414b-83cd-856d6fef4822"), 2);
+    public static readonly PropertyKey DeviceInterfaceFriendlyName = new(
+        new Guid("026e516e-b814-414b-83cd-856d6fef4822"),
+        2
+    );
     public static readonly PropertyKey DeviceContainerId = new(new Guid("8c7ed206-3f8a-4827-b3ab-ae9e1faefc6c"), 2);
 }
 
@@ -106,7 +108,12 @@ internal interface IMMDeviceCollection
 [ComImport, Guid("d666063f-1587-4e43-81f1-b948e807363f"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 internal interface IMMDevice
 {
-    void Activate(ref Guid iid, uint clsCtx, IntPtr activationParams, [MarshalAs(UnmanagedType.IUnknown)] out object instance);
+    void Activate(
+        ref Guid iid,
+        uint clsCtx,
+        IntPtr activationParams,
+        [MarshalAs(UnmanagedType.IUnknown)] out object instance
+    );
     void OpenPropertyStore(uint stgmAccess, out IPropertyStore properties);
     void GetId([MarshalAs(UnmanagedType.LPWStr)] out string id);
     void GetState(out DeviceState state);
@@ -151,7 +158,13 @@ internal interface IConnector
 internal interface IKsControl
 {
     [PreserveSig]
-    int KsProperty(ref KsProperty property, uint propertyLength, IntPtr propertyData, uint dataLength, out uint bytesReturned);
+    int KsProperty(
+        ref KsProperty property,
+        uint propertyLength,
+        IntPtr propertyData,
+        uint dataLength,
+        out uint bytesReturned
+    );
 
     [PreserveSig]
     int KsMethod(IntPtr method, uint methodLength, IntPtr methodData, uint dataLength, out uint bytesReturned);

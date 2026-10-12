@@ -10,7 +10,8 @@ public class AppCommandsTests
         new PairedDevice("Chris's Buds4", IsConnected: false, ["filter-buds"]),
         new PairedDevice("Kitchen Speaker", IsConnected: true, ["filter-kitchen"]),
         new PairedDevice("Office Speaker", IsConnected: false, ["filter-office"]),
-        new PairedDevice("Logitech Mouse", IsConnected: true, []));
+        new PairedDevice("Logitech Mouse", IsConnected: true, [])
+    );
 
     private readonly FakeShortcutService _shortcuts = new();
 
@@ -116,10 +117,12 @@ public class AppCommandsTests
 
         Assert.Equal(ExitCodes.Success, exitCode);
         Assert.Equal(
-        [
-            ("desktop", "Connect Chris's Buds4", "connect \"Chris's Buds4\""),
-            ("desktop", "Disconnect Chris's Buds4", "disconnect \"Chris's Buds4\""),
-        ], _shortcuts.Created);
+            [
+                ("desktop", "Connect Chris's Buds4", "connect \"Chris's Buds4\""),
+                ("desktop", "Disconnect Chris's Buds4", "disconnect \"Chris's Buds4\""),
+            ],
+            _shortcuts.Created
+        );
     }
 
     [Fact]
@@ -136,7 +139,8 @@ public class AppCommandsTests
         var error = new StringWriter();
         var root = AppCommands.Build(_bluetooth, _shortcuts);
 
-        var exitCode = await root.Parse(args).InvokeAsync(new InvocationConfiguration { Output = output, Error = error });
+        var exitCode = await root.Parse(args)
+            .InvokeAsync(new InvocationConfiguration { Output = output, Error = error });
         return (exitCode, output.ToString(), error.ToString());
     }
 

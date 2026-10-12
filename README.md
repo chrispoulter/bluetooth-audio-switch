@@ -102,6 +102,18 @@ Install the recommended **C# Dev Kit** extension. Then:
 - **Run and Debug** (F5): choose `btaudio list`, `connect`, `disconnect` or `toggle`. You'll be asked for the device name.
 - **Tasks: Run Task**: `test` or `publish`
 
+### Formatting
+
+C# and project files are formatted with [CSharpier](https://csharpier.com). It's installed as a local tool, and settings are in `.csharpierrc.json`. CI fails if anything isn't formatted.
+
+```powershell
+dotnet tool restore           # once, after cloning
+dotnet csharpier format .     # format everything
+dotnet csharpier check .      # what CI runs
+```
+
+For editor support, install the **CSharpier** extension. In VS Code it's recommended for this workspace and set as the C# formatter, so **Format Document** (Shift+Alt+F) uses it. In Visual Studio 2026, install it from the Marketplace and run **Reformat with CSharpier**.
+
 ## CI/CD
 
 GitHub Actions ([.github/workflows/ci.yml](.github/workflows/ci.yml)):

@@ -16,12 +16,13 @@ internal sealed class ShortcutService : IShortcutService
 {
     public string DesktopFolder => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 
-    public string StartMenuFolder => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.Programs), "Bluetooth Audio Switch");
+    public string StartMenuFolder =>
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "Bluetooth Audio Switch");
 
     public string Create(string folder, string title, string arguments)
     {
-        var exePath = Environment.ProcessPath
+        var exePath =
+            Environment.ProcessPath
             ?? throw new InvalidOperationException("Unable to determine the path of btaudio.exe.");
 
         Directory.CreateDirectory(folder);
