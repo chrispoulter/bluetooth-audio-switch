@@ -74,13 +74,13 @@ jobs:
           -c Release -r ${{ matrix.rid }} --self-contained
           -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
           -p:Version=${{ steps.version.outputs.version }}
-          -o artifacts/${{ matrix.rid }}
 
       - name: Package
         shell: pwsh
+        env:
+          PUBLISH_DIR: src/BluetoothAudioSwitch/bin/Release/net10.0-windows10.0.19041.0/${{ matrix.rid }}/publish
         run: |
-          Copy-Item README.md, LICENSE artifacts/${{ matrix.rid }}
-          Compress-Archive -Path artifacts/${{ matrix.rid }}/* -DestinationPath btaudio-${{ steps.version.outputs.version }}-${{ matrix.rid }}.zip
+          Compress-Archive -Path "$env:PUBLISH_DIR/*", README.md, LICENSE -DestinationPath btaudio-${{ steps.version.outputs.version }}-${{ matrix.rid }}.zip
 
       - uses: actions/upload-artifact@v7
         with:

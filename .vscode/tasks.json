@@ -21,7 +21,7 @@
       "label": "publish",
       "command": "dotnet",
       "type": "process",
-      "args": ["publish", "${workspaceFolder}/src/BluetoothAudioSwitch/BluetoothAudioSwitch.csproj", "-c", "Release", "-r", "win-x64", "--self-contained", "-p:PublishSingleFile=true", "-o", "${workspaceFolder}/artifacts/win-x64"],
+      "args": ["publish", "${workspaceFolder}/src/BluetoothAudioSwitch/BluetoothAudioSwitch.csproj", "-c", "Release", "-r", "win-x64", "--self-contained", "-p:PublishSingleFile=true"],
       "problemMatcher": "$msCompile"
     }
   ]
