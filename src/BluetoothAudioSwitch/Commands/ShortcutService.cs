@@ -31,7 +31,7 @@ internal sealed class ShortcutService : IShortcutService
 
         Directory.CreateDirectory(folder);
         var path = Path.Combine(folder, SanitizeFileName(title) + ".lnk");
-        var bluetoothIcon = Path.Combine(Environment.SystemDirectory, "bthprops.cpl");
+        var bluetoothIcon = Path.Combine(Environment.SystemDirectory, "fsquirt.exe");
 
         ShellLink.Create(path, exePath, arguments, title, bluetoothIcon, 0);
         return path;
