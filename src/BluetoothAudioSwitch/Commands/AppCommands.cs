@@ -214,7 +214,7 @@ internal static class AppCommands
                     foreach (var verb in verbs)
                     {
                         var title = $"{char.ToUpperInvariant(verb[0])}{verb[1..]} {device.Name}";
-                        var path = shortcuts.Create(folder, title, $"{verb} {quotedName}");
+                        var path = shortcuts.Create(folder, title, $"{verb} {quotedName}", verb);
                         output.WriteLine($"Created {path}");
                     }
                 }

@@ -118,8 +118,13 @@ public class AppCommandsTests
         Assert.Equal(ExitCodes.Success, exitCode);
         Assert.Equal(
             [
-                ("desktop", "Connect Chris's Buds4", "connect \"Chris's Buds4\""),
-                ("desktop", "Disconnect Chris's Buds4", "disconnect \"Chris's Buds4\""),
+                ("desktop", "Connect Chris's Buds4", "connect \"Chris's Buds4\"", "connect"),
+                (
+                    "desktop",
+                    "Disconnect Chris's Buds4",
+                    "disconnect \"Chris's Buds4\"",
+                    "disconnect"
+                ),
             ],
             _shortcuts.Created
         );
@@ -131,7 +136,7 @@ public class AppCommandsTests
         await RunAsync("shortcut", "buds", "--start-menu", "--toggle");
 
         Assert.Equal(
-            [("start-menu", "Toggle Chris's Buds4", "toggle \"Chris's Buds4\"")],
+            [("start-menu", "Toggle Chris's Buds4", "toggle \"Chris's Buds4\"", "toggle")],
             _shortcuts.Created
         );
     }
@@ -175,15 +180,16 @@ public class AppCommandsTests
 
     private sealed class FakeShortcutService : IShortcutService
     {
-        public List<(string Folder, string Title, string Arguments)> Created { get; } = [];
+        public List<(string Folder, string Title, string Arguments, string Icon)> Created { get; } =
+        [];
 
         public string DesktopFolder => "desktop";
 
         public string StartMenuFolder => "start-menu";
 
-        public string Create(string folder, string title, string arguments)
+        public string Create(string folder, string title, string arguments, string icon)
         {
-            Created.Add((folder, title, arguments));
+            Created.Add((folder, title, arguments, icon));
             return $"{folder}\\{title}.lnk";
         }
     }

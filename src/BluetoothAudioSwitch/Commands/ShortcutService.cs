@@ -4,8 +4,11 @@ namespace BluetoothAudioSwitch.Commands;
 
 internal interface IShortcutService
 {
-    /// <summary>Creates a shortcut that runs btaudio with the given arguments and returns its path.</summary>
-    string Create(string folder, string title, string arguments);
+    /// <summary>
+    /// Creates a shortcut that runs btaudio with the given arguments and returns its path.
+    /// <paramref name="icon"/> names one of the embedded icons: connect, disconnect or toggle.
+    /// </summary>
+    string Create(string folder, string title, string arguments, string icon);
 
     string DesktopFolder { get; }
 
@@ -23,7 +26,14 @@ internal sealed class ShortcutService : IShortcutService
             "Bluetooth Audio Switch"
         );
 
-    public string Create(string folder, string title, string arguments)
+    private static string IconFolder =>
+        Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Bluetooth Audio Switch",
+            "Icons"
+        );
+
+    public string Create(string folder, string title, string arguments, string icon)
     {
         var exePath =
             Environment.ProcessPath
@@ -31,10 +41,32 @@ internal sealed class ShortcutService : IShortcutService
 
         Directory.CreateDirectory(folder);
         var path = Path.Combine(folder, SanitizeFileName(title) + ".lnk");
-        var bluetoothIcon = Path.Combine(Environment.SystemDirectory, "fsquirt.exe");
 
-        ShellLink.Create(path, exePath, arguments, title, bluetoothIcon, 0);
+        ShellLink.Create(path, exePath, arguments, title, ExtractIcon(icon), 0);
         return path;
+    }
+
+    /// <summary>
+    /// Shortcuts can't point at a managed resource, so the icon is written to a stable
+    /// per-user folder. It stays valid even if btaudio.exe is later moved.
+    /// </summary>
+    private static string ExtractIcon(string icon)
+    {
+        using var resource =
+            typeof(ShortcutService).Assembly.GetManifestResourceStream($"Icons.{icon}.ico")
+            ?? throw new ArgumentException($"No embedded icon named '{icon}'.", nameof(icon));
+        using var buffer = new MemoryStream();
+        resource.CopyTo(buffer);
+        var bytes = buffer.ToArray();
+
+        Directory.CreateDirectory(IconFolder);
+        var iconPath = Path.Combine(IconFolder, $"{icon}.ico");
+        if (!File.Exists(iconPath) || !File.ReadAllBytes(iconPath).AsSpan().SequenceEqual(bytes))
+        {
+            File.WriteAllBytes(iconPath, bytes);
+        }
+
+        return iconPath;
     }
 
     private static string SanitizeFileName(string name) =>

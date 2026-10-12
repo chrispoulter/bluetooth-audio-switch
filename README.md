@@ -44,7 +44,7 @@ btaudio shortcut "Chris's Buds4" --desktop --start-menu
 btaudio shortcut "Chris's Buds4" --toggle             A single "Toggle Chris's Buds4" shortcut
 ```
 
-The shortcuts run `btaudio.exe` minimised and use the Windows Bluetooth icon. They point to wherever `btaudio.exe` was when you created them, so put the exe somewhere permanent first (for example `%LOCALAPPDATA%\Programs\btaudio\`).
+The shortcuts run `btaudio.exe` minimised. Each one has a Bluetooth icon with a badge for its action: a green tick for Connect, a red cross for Disconnect and orange arrows for Toggle. The icons are saved to `%LOCALAPPDATA%\Bluetooth Audio Switch\Icons\`. The shortcuts point to wherever `btaudio.exe` was when you created them, so put the exe somewhere permanent first (for example `%LOCALAPPDATA%\Programs\btaudio\`).
 
 A Start Menu shortcut can also be pinned to Start or the taskbar. You can give it a keyboard shortcut in its Properties dialog.
 

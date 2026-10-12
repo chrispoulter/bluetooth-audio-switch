@@ -12,10 +12,15 @@
     <RootNamespace>BluetoothAudioSwitch</RootNamespace>
     <Description>Connect and disconnect paired Bluetooth audio devices from the command line.</Description>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <ApplicationIcon>Icons\toggle.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.CommandLine" Version="2.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\*.ico" LogicalName="Icons.%(Filename)%(Extension)" />
   </ItemGroup>
 
   <ItemGroup>
