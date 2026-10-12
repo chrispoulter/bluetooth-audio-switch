@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "list": {
+      "commandName": "Project",
+      "commandLineArgs": "list --all"
+    },
+    "connect": {
+      "commandName": "Project",
+      "commandLineArgs": "connect \"Chris's Buds4\""
+    },
+    "disconnect": {
+      "commandName": "Project",
+      "commandLineArgs": "disconnect \"Chris's Buds4\""
+    },
+    "toggle": {
+      "commandName": "Project",
+      "commandLineArgs": "toggle \"Chris's Buds4\""
+    },
+    "help": {
+      "commandName": "Project",
+      "commandLineArgs": "--help"
+    }
+  }
+}

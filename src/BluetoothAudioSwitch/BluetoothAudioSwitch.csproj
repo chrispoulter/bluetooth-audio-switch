@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>btaudio</AssemblyName>
+    <RootNamespace>BluetoothAudioSwitch</RootNamespace>
+    <Description>Connect and disconnect paired Bluetooth audio devices from the command line.</Description>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="2.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="BluetoothAudioSwitch.Tests" />
+  </ItemGroup>
+
+</Project>

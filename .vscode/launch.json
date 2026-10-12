@@ -1,0 +1,57 @@
+{
+  "version": "0.2.0",
+  "inputs": [
+    {
+      "id": "deviceName",
+      "type": "promptString",
+      "description": "Bluetooth device name",
+      "default": "Chris's Buds4"
+    }
+  ],
+  "configurations": [
+    {
+      "name": "btaudio list",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/BluetoothAudioSwitch/bin/Debug/net10.0-windows10.0.19041.0/btaudio.dll",
+      "args": ["list", "--all"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "btaudio connect",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/BluetoothAudioSwitch/bin/Debug/net10.0-windows10.0.19041.0/btaudio.dll",
+      "args": ["connect", "${input:deviceName}"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "btaudio disconnect",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/BluetoothAudioSwitch/bin/Debug/net10.0-windows10.0.19041.0/btaudio.dll",
+      "args": ["disconnect", "${input:deviceName}"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "btaudio toggle",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/BluetoothAudioSwitch/bin/Debug/net10.0-windows10.0.19041.0/btaudio.dll",
+      "args": ["toggle", "${input:deviceName}"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    }
+  ]
+}

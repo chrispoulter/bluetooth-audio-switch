@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build:
+    name: Build & test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore BluetoothAudioSwitch.sln
+
+      - name: Build
+        run: dotnet build BluetoothAudioSwitch.sln -c Release --no-restore
+
+      - name: Test
+        run: dotnet test BluetoothAudioSwitch.sln -c Release --no-build --logger trx --results-directory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults
+
+  publish:
+    name: Publish ${{ matrix.rid }}
+    needs: build
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        rid: [win-x64, win-arm64]
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Determine version
+        id: version
+        shell: pwsh
+        run: |
+          $version = if ('${{ github.ref_type }}' -eq 'tag') { '${{ github.ref_name }}'.TrimStart('v') } else { "1.0.0-ci.${{ github.run_number }}" }
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Publish
+        run: >
+          dotnet publish src/BluetoothAudioSwitch/BluetoothAudioSwitch.csproj
+          -c Release -r ${{ matrix.rid }} --self-contained
+          -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:Version=${{ steps.version.outputs.version }}
+          -o artifacts/${{ matrix.rid }}
+
+      - name: Package
+        shell: pwsh
+        run: |
+          Copy-Item README.md, LICENSE artifacts/${{ matrix.rid }}
+          Compress-Archive -Path artifacts/${{ matrix.rid }}/* -DestinationPath btaudio-${{ steps.version.outputs.version }}-${{ matrix.rid }}.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: btaudio-${{ matrix.rid }}
+          path: btaudio-*.zip
+
+  release:
+    name: GitHub release
+    if: github.ref_type == 'tag'
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: btaudio-*
+          merge-multiple: true
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${{ github.ref_name }}" btaudio-*.zip --repo "${{ github.repository }}" --title "${{ github.ref_name }}" --generate-notes
