@@ -37,7 +37,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results
           path: TestResults
@@ -77,7 +77,7 @@ jobs:
           Copy-Item README.md, LICENSE artifacts/${{ matrix.rid }}
           Compress-Archive -Path artifacts/${{ matrix.rid }}/* -DestinationPath btaudio-${{ steps.version.outputs.version }}-${{ matrix.rid }}.zip
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: btaudio-${{ matrix.rid }}
           path: btaudio-*.zip
@@ -90,7 +90,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: btaudio-*
           merge-multiple: true
