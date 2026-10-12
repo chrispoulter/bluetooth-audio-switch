@@ -90,11 +90,9 @@ dotnet run --project src/BluetoothAudioSwitch -- list
 dotnet publish src/BluetoothAudioSwitch -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -o artifacts/win-x64
 ```
 
-### Visual Studio
+### Visual Studio 2026
 
-Open `BluetoothAudioSwitch.sln`. Debug profiles (`list`, `connect`, `disconnect`, `toggle`, `help`) are in the run button drop-down. They're defined in `src/BluetoothAudioSwitch/Properties/launchSettings.json`; change the device name there.
-
-> **Note:** .NET 10 needs **Visual Studio 2026** (or later). Visual Studio 2022 only supports up to .NET 9 and can't build this project.
+Open `BluetoothAudioSwitch.slnx`. Debug profiles (`list`, `connect`, `disconnect`, `toggle`, `help`) are in the run button drop-down. They're defined in `src/BluetoothAudioSwitch/Properties/launchSettings.json`; change the device name there.
 
 ### VS Code
 

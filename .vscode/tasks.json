@@ -5,7 +5,7 @@
       "label": "build",
       "command": "dotnet",
       "type": "process",
-      "args": ["build", "${workspaceFolder}/BluetoothAudioSwitch.sln", "/property:GenerateFullPaths=true", "/consoleloggerparameters:NoSummary"],
+      "args": ["build", "${workspaceFolder}/BluetoothAudioSwitch.slnx", "/property:GenerateFullPaths=true", "/consoleloggerparameters:NoSummary"],
       "problemMatcher": "$msCompile",
       "group": { "kind": "build", "isDefault": true }
     },
@@ -13,7 +13,7 @@
       "label": "test",
       "command": "dotnet",
       "type": "process",
-      "args": ["test", "${workspaceFolder}/BluetoothAudioSwitch.sln"],
+      "args": ["test", "${workspaceFolder}/BluetoothAudioSwitch.slnx"],
       "problemMatcher": "$msCompile",
       "group": { "kind": "test", "isDefault": true }
     },

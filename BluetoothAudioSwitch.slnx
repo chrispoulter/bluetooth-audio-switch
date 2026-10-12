@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/BluetoothAudioSwitch/BluetoothAudioSwitch.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/BluetoothAudioSwitch.Tests/BluetoothAudioSwitch.Tests.csproj" />
+  </Folder>
+</Solution>
