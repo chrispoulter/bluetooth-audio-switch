@@ -22,7 +22,11 @@ internal static class DeviceNameMatcher
     /// (every query word is the start of some word in the name). The first
     /// tier that yields any result decides the outcome.
     /// </summary>
-    public static MatchResult<T> Match<T>(IEnumerable<T> items, Func<T, string> getName, string query)
+    public static MatchResult<T> Match<T>(
+        IEnumerable<T> items,
+        Func<T, string> getName,
+        string query
+    )
     {
         var list = items.ToList();
         var normalizedQuery = Normalize(query);
@@ -36,7 +40,10 @@ internal static class DeviceNameMatcher
         [
             name => name == normalizedQuery,
             name => name.Contains(normalizedQuery, StringComparison.Ordinal),
-            name => queryWords.All(q => Words(name).Any(w => w.StartsWith(q, StringComparison.Ordinal))),
+            name =>
+                queryWords.All(q =>
+                    Words(name).Any(w => w.StartsWith(q, StringComparison.Ordinal))
+                ),
         ];
 
         foreach (var tier in tiers)
@@ -86,5 +93,6 @@ internal static class DeviceNameMatcher
         return builder.ToString().TrimEnd();
     }
 
-    private static string[] Words(string normalized) => normalized.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    private static string[] Words(string normalized) =>
+        normalized.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 }

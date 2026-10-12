@@ -4,7 +4,13 @@ namespace BluetoothAudioSwitch.Tests;
 
 public class DeviceNameMatcherTests
 {
-    private static readonly string[] Names = ["Chris's Buds4", "WH-1000XM4", "Kitchen Speaker", "Office Speaker"];
+    private static readonly string[] Names =
+    [
+        "Chris's Buds4",
+        "WH-1000XM4",
+        "Kitchen Speaker",
+        "Office Speaker",
+    ];
 
     [Theory]
     [InlineData("Chris's Buds4", "Chris's Buds4")]

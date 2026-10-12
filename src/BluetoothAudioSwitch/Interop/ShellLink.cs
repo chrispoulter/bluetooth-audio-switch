@@ -7,10 +7,19 @@ namespace BluetoothAudioSwitch.Interop;
 [ComImport, Guid("00021401-0000-0000-c000-000000000046")]
 internal class ShellLinkCoClass;
 
-[ComImport, Guid("000214f9-0000-0000-c000-000000000046"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+[
+    ComImport,
+    Guid("000214f9-0000-0000-c000-000000000046"),
+    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)
+]
 internal interface IShellLinkW
 {
-    void GetPath([MarshalAs(UnmanagedType.LPWStr)] StringBuilder file, int maxPath, IntPtr findData, uint flags);
+    void GetPath(
+        [MarshalAs(UnmanagedType.LPWStr)] StringBuilder file,
+        int maxPath,
+        IntPtr findData,
+        uint flags
+    );
     void GetIDList(out IntPtr idList);
     void SetIDList(IntPtr idList);
     void GetDescription([MarshalAs(UnmanagedType.LPWStr)] StringBuilder name, int maxName);
@@ -23,7 +32,11 @@ internal interface IShellLinkW
     void SetHotkey(short hotkey);
     void GetShowCmd(out int showCmd);
     void SetShowCmd(int showCmd);
-    void GetIconLocation([MarshalAs(UnmanagedType.LPWStr)] StringBuilder iconPath, int maxIconPath, out int iconIndex);
+    void GetIconLocation(
+        [MarshalAs(UnmanagedType.LPWStr)] StringBuilder iconPath,
+        int maxIconPath,
+        out int iconIndex
+    );
     void SetIconLocation([MarshalAs(UnmanagedType.LPWStr)] string iconPath, int iconIndex);
     void SetRelativePath([MarshalAs(UnmanagedType.LPWStr)] string pathRel, uint reserved);
     void Resolve(IntPtr hwnd, uint flags);

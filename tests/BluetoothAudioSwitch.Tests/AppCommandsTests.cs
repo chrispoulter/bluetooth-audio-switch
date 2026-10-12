@@ -130,7 +130,10 @@ public class AppCommandsTests
     {
         await RunAsync("shortcut", "buds", "--start-menu", "--toggle");
 
-        Assert.Equal([("start-menu", "Toggle Chris's Buds4", "toggle \"Chris's Buds4\"")], _shortcuts.Created);
+        Assert.Equal(
+            [("start-menu", "Toggle Chris's Buds4", "toggle \"Chris's Buds4\"")],
+            _shortcuts.Created
+        );
     }
 
     private async Task<(int ExitCode, string Output, string Error)> RunAsync(params string[] args)
@@ -144,14 +147,16 @@ public class AppCommandsTests
         return (exitCode, output.ToString(), error.ToString());
     }
 
-    private sealed class FakeBluetoothService(params PairedDevice[] devices) : IBluetoothAudioService
+    private sealed class FakeBluetoothService(params PairedDevice[] devices)
+        : IBluetoothAudioService
     {
         public List<string> Calls { get; } = [];
 
         public string? FailWith { get; set; }
 
-        public Task<IReadOnlyList<PairedDevice>> GetPairedDevicesAsync(CancellationToken cancellationToken = default) =>
-            Task.FromResult<IReadOnlyList<PairedDevice>>(devices);
+        public Task<IReadOnlyList<PairedDevice>> GetPairedDevicesAsync(
+            CancellationToken cancellationToken = default
+        ) => Task.FromResult<IReadOnlyList<PairedDevice>>(devices);
 
         public void Connect(PairedDevice device) => Record("connect", device);
 

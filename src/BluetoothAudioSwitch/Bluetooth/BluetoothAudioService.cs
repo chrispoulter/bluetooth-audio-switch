@@ -16,9 +16,16 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
     private const string IsConnectedProperty = "System.Devices.Aep.IsConnected";
     private const string ContainerIdProperty = "System.Devices.Aep.ContainerId";
 
-    private sealed record AudioEndpoint(string FilterId, Guid? ContainerId, string? Name, bool IsActive);
+    private sealed record AudioEndpoint(
+        string FilterId,
+        Guid? ContainerId,
+        string? Name,
+        bool IsActive
+    );
 
-    public async Task<IReadOnlyList<PairedDevice>> GetPairedDevicesAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<PairedDevice>> GetPairedDevicesAsync(
+        CancellationToken cancellationToken = default
+    )
     {
         var endpoints = GetBluetoothAudioEndpoints();
 
@@ -36,7 +43,9 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
         foreach (var info in paired)
         {
             var containerId =
-                info.Properties.TryGetValue(ContainerIdProperty, out var c) && c is Guid g ? g : (Guid?)null;
+                info.Properties.TryGetValue(ContainerIdProperty, out var c) && c is Guid g
+                    ? g
+                    : (Guid?)null;
             var deviceEndpoints = containerId is null
                 ? []
                 : endpoints.Where(e => e.ContainerId == containerId).ToList();
@@ -52,7 +61,12 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
 
         // Audio endpoints whose container could not be matched to a paired device
         // are still usable; group them by the name Core Audio reports.
-        foreach (var group in endpoints.Except(claimed).Where(e => e.Name is not null).GroupBy(e => e.Name!))
+        foreach (
+            var group in endpoints
+                .Except(claimed)
+                .Where(e => e.Name is not null)
+                .GroupBy(e => e.Name!)
+        )
         {
             devices.Add(new PairedDevice(group.Key, group.Any(e => e.IsActive), FilterIds(group)));
         }
@@ -60,9 +74,11 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
         return devices.OrderBy(d => d.Name, StringComparer.CurrentCultureIgnoreCase).ToList();
     }
 
-    public void Connect(PairedDevice device) => SendOneShot(device, KsBluetoothAudio.OneShotReconnect);
+    public void Connect(PairedDevice device) =>
+        SendOneShot(device, KsBluetoothAudio.OneShotReconnect);
 
-    public void Disconnect(PairedDevice device) => SendOneShot(device, KsBluetoothAudio.OneShotDisconnect);
+    public void Disconnect(PairedDevice device) =>
+        SendOneShot(device, KsBluetoothAudio.OneShotDisconnect);
 
     private static IReadOnlyList<string> FilterIds(IEnumerable<AudioEndpoint> endpoints) =>
         endpoints.Select(e => e.FilterId).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
@@ -94,7 +110,13 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
                     Flags = KsBluetoothAudio.KsPropertyTypeGet,
                 };
 
-                var hr = ksControl.KsProperty(ref property, (uint)Marshal.SizeOf<KsProperty>(), IntPtr.Zero, 0, out _);
+                var hr = ksControl.KsProperty(
+                    ref property,
+                    (uint)Marshal.SizeOf<KsProperty>(),
+                    IntPtr.Zero,
+                    0,
+                    out _
+                );
                 if (hr >= 0)
                 {
                     succeeded++;
@@ -128,7 +150,11 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
     private static List<AudioEndpoint> GetBluetoothAudioEndpoints()
     {
         var enumerator = CreateEnumerator();
-        enumerator.EnumAudioEndpoints(EDataFlow.All, DeviceState.Active | DeviceState.Unplugged, out var collection);
+        enumerator.EnumAudioEndpoints(
+            EDataFlow.All,
+            DeviceState.Active | DeviceState.Unplugged,
+            out var collection
+        );
         collection.GetCount(out var count);
 
         var endpoints = new List<AudioEndpoint>();
@@ -146,7 +172,9 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
             var containerId = ReadGuid(store, PropertyKeys.DeviceContainerId);
             var name = ReadString(store, PropertyKeys.DeviceInterfaceFriendlyName);
 
-            endpoints.Add(new AudioEndpoint(filterId, containerId, name, state == DeviceState.Active));
+            endpoints.Add(
+                new AudioEndpoint(filterId, containerId, name, state == DeviceState.Active)
+            );
         }
 
         return endpoints;
@@ -178,9 +206,14 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
     private static string? ReadString(IPropertyStore store, PropertyKey key) =>
         ReadValue(store, key, v => v.AsString());
 
-    private static Guid? ReadGuid(IPropertyStore store, PropertyKey key) => ReadValue(store, key, v => v.AsGuid());
+    private static Guid? ReadGuid(IPropertyStore store, PropertyKey key) =>
+        ReadValue(store, key, v => v.AsGuid());
 
-    private static T? ReadValue<T>(IPropertyStore store, PropertyKey key, Func<PropVariant, T?> read)
+    private static T? ReadValue<T>(
+        IPropertyStore store,
+        PropertyKey key,
+        Func<PropVariant, T?> read
+    )
     {
         try
         {

@@ -7,7 +7,9 @@ internal static class AppCommands
 {
     public static RootCommand Build(IBluetoothAudioService bluetooth, IShortcutService shortcuts)
     {
-        var root = new RootCommand("Bluetooth Audio Switch - connect and disconnect paired Bluetooth audio devices.")
+        var root = new RootCommand(
+            "Bluetooth Audio Switch - connect and disconnect paired Bluetooth audio devices."
+        )
         {
             BuildList(bluetooth),
             BuildConnectionCommand(
@@ -42,7 +44,10 @@ internal static class AppCommands
     }
 
     private static Argument<string> NameArgument() =>
-        new("name") { Description = "Device name (or a unique part of it), e.g. \"Chris's Buds4\"." };
+        new("name")
+        {
+            Description = "Device name (or a unique part of it), e.g. \"Chris's Buds4\".",
+        };
 
     private static Command BuildList(IBluetoothAudioService bluetooth)
     {
@@ -141,14 +146,20 @@ internal static class AppCommands
         return command;
     }
 
-    private static Command BuildShortcut(IBluetoothAudioService bluetooth, IShortcutService shortcuts)
+    private static Command BuildShortcut(
+        IBluetoothAudioService bluetooth,
+        IShortcutService shortcuts
+    )
     {
         var nameArgument = NameArgument();
         var desktop = new Option<bool>("--desktop", "-d")
         {
             Description = "Create shortcuts on the desktop (default).",
         };
-        var startMenu = new Option<bool>("--start-menu", "-s") { Description = "Create shortcuts in the Start Menu." };
+        var startMenu = new Option<bool>("--start-menu", "-s")
+        {
+            Description = "Create shortcuts in the Start Menu.",
+        };
         var toggle = new Option<bool>("--toggle", "-t")
         {
             Description = "Create a single Toggle shortcut instead of Connect and Disconnect.",
@@ -193,7 +204,9 @@ internal static class AppCommands
                     folders.Add(shortcuts.StartMenuFolder);
                 }
 
-                string[] verbs = parseResult.GetValue(toggle) ? ["toggle"] : ["connect", "disconnect"];
+                string[] verbs = parseResult.GetValue(toggle)
+                    ? ["toggle"]
+                    : ["connect", "disconnect"];
                 var quotedName = $"\"{device.Name.Replace("\"", string.Empty)}\"";
 
                 foreach (var folder in folders)
@@ -220,7 +233,9 @@ internal static class AppCommands
         CancellationToken cancellationToken
     )
     {
-        var audioDevices = (await bluetooth.GetPairedDevicesAsync(cancellationToken)).Where(d => d.IsAudio).ToList();
+        var audioDevices = (await bluetooth.GetPairedDevicesAsync(cancellationToken))
+            .Where(d => d.IsAudio)
+            .ToList();
         var result = DeviceNameMatcher.Match(audioDevices, d => d.Name, name);
 
         switch (result.Kind)

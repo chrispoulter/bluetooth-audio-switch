@@ -14,10 +14,14 @@ internal interface IShortcutService
 
 internal sealed class ShortcutService : IShortcutService
 {
-    public string DesktopFolder => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+    public string DesktopFolder =>
+        Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 
     public string StartMenuFolder =>
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "Bluetooth Audio Switch");
+        Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.Programs),
+            "Bluetooth Audio Switch"
+        );
 
     public string Create(string folder, string title, string arguments)
     {
