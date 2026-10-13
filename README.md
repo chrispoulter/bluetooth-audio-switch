@@ -120,8 +120,9 @@ For editor support, install the **CSharpier** extension. In VS Code it's recomme
 
 GitHub Actions ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
 
-- **Every push or pull request to `main`:** builds and tests on Windows, then publishes `win-x64` and `win-arm64` single-file builds as workflow artifacts.
-- **Tags matching `v*`:** also creates a GitHub Release with the zipped exes attached.
+- **Every push to any branch:** builds, tests and checks formatting on Windows. Pushes that only change Markdown, `.vscode/` or `.gitignore` files are skipped.
+- **Tags matching `v*.*.*`:** also publishes `win-x64` and `win-arm64` single-file builds and creates a GitHub Release with the zipped exes attached. Path filters don't apply to tags, so a tag always releases.
+- **Manual run** (*Run workflow* in the Actions tab): builds and publishes the zips as workflow artifacts, without a release.
 
 ```powershell
 git tag v1.0.0
