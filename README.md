@@ -10,6 +10,7 @@ btaudio list --all                   ...including non-audio devices (mice, keybo
 btaudio connect "Chris's Buds4"      Connect a device
 btaudio disconnect "Chris's Buds4"   Disconnect a device
 btaudio shortcut "Chris's Buds4"     Create Connect/Disconnect shortcuts on the desktop
+btaudio list --verbose               Any command with detailed diagnostics on stderr
 btaudio --help                       Show help (works for every command: btaudio connect --help)
 ```
 
@@ -53,6 +54,12 @@ A Start Menu shortcut can also be pinned to Start or the taskbar. You can give i
 | 4 | Windows rejected the connect/disconnect request |
 
 `connect` and `disconnect` send the request to Windows and return straight away. The connection itself takes a few seconds, and the device must be switched on and in range (earbuds out of their case).
+
+### Logs
+
+Each run is logged to `%LOCALAPPDATA%\Bluetooth Audio Switch\Logs\btaudio-<date>.log`. There's one file per day, and files older than 7 days are deleted. If a shortcut seems to do nothing, check the latest log: the shortcuts run minimised, so their error messages are only recorded there.
+
+`--verbose` (`-v`) works with every command. It adds detail to the log (every audio endpoint, its kernel-streaming filter and container ID, and the HRESULT from each connect/disconnect request) and also prints it to stderr. stdout isn't affected, so `btaudio list -v > devices.txt` still saves only the table.
 
 ## How it works
 
@@ -126,6 +133,7 @@ git push origin v1.0.0
 ```text
 src/BluetoothAudioSwitch/
   Program.cs                  Entry point
+  Logging.cs                  Serilog setup (rolling log file, --verbose)
   Commands/                   System.CommandLine commands, shortcut creation, exit codes
   Bluetooth/                  Device discovery, name matching, connect/disconnect
   Interop/                    Core Audio / Kernel Streaming / Shell Link COM definitions

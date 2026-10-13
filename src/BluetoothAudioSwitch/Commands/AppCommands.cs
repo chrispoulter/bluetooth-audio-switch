@@ -1,16 +1,28 @@
 using System.CommandLine;
 using BluetoothAudioSwitch.Bluetooth;
+using Serilog;
 
 namespace BluetoothAudioSwitch.Commands;
 
 internal static class AppCommands
 {
+    // Resolved per call: Log.Logger is configured after the commands are built.
+    private static ILogger Logger => Log.ForContext(typeof(AppCommands));
+
+    /// <summary>Read by Program before invocation to configure logging.</summary>
+    public static readonly Option<bool> Verbose = new("--verbose", "-v")
+    {
+        Description = "Write detailed diagnostics to stderr and the log file.",
+        Recursive = true,
+    };
+
     public static RootCommand Build(IBluetoothAudioService bluetooth, IShortcutService shortcuts)
     {
         var root = new RootCommand(
             "Bluetooth Audio Switch - connect and disconnect paired Bluetooth audio devices."
         )
         {
+            Verbose,
             BuildList(bluetooth),
             BuildConnectionCommand(
                 "connect",
@@ -124,6 +136,7 @@ internal static class AppCommands
                 }
                 catch (BluetoothAudioException ex)
                 {
+                    Logger.Error(ex, "{Action} {Device} failed", action, device.Name);
                     error.WriteLine(ex.Message);
                     return ExitCodes.OperationFailed;
                 }
@@ -198,6 +211,7 @@ internal static class AppCommands
                     {
                         var title = $"{char.ToUpperInvariant(verb[0])}{verb[1..]} {device.Name}";
                         var path = shortcuts.Create(folder, title, $"{verb} {quotedName}", verb);
+                        Logger.Information("Created shortcut {Path}", path);
                         output.WriteLine($"Created {path}");
                     }
                 }
@@ -225,9 +239,16 @@ internal static class AppCommands
         switch (result.Kind)
         {
             case MatchKind.Found:
+                Logger.Information("'{Query}' matched {Device}", name, result.Match!.Name);
                 return (result.Match, ExitCodes.Success);
 
             case MatchKind.Ambiguous:
+                Logger.Warning(
+                    "'{Query}' is ambiguous: {Candidates}",
+                    name,
+                    result.Candidates.Select(c => c.Name)
+                );
+
                 error.WriteLine($"'{name}' matches more than one device:");
                 foreach (var candidate in result.Candidates)
                 {
@@ -238,10 +259,18 @@ internal static class AppCommands
                 return (null, ExitCodes.AmbiguousName);
 
             default:
+                Logger.Warning(
+                    "'{Query}' matched no audio device. Paired audio devices: {Devices}",
+                    name,
+                    audioDevices.Select(d => d.Name)
+                );
+
                 error.WriteLine($"No paired Bluetooth audio device matches '{name}'.");
+
                 if (audioDevices.Count > 0)
                 {
                     error.WriteLine("Paired audio devices:");
+
                     foreach (var device in audioDevices)
                     {
                         error.WriteLine($"  {device.Name}");

@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using BluetoothAudioSwitch.Interop;
+using Serilog;
 using Windows.Devices.Enumeration;
 using WinRtBluetoothDevice = Windows.Devices.Bluetooth.BluetoothDevice;
 
@@ -15,6 +16,9 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
 {
     private const string IsConnectedProperty = "System.Devices.Aep.IsConnected";
     private const string ContainerIdProperty = "System.Devices.Aep.ContainerId";
+
+    // Resolved per call: Log.Logger is configured after this service is created.
+    private static ILogger Logger => Log.ForContext<BluetoothAudioService>();
 
     private sealed record AudioEndpoint(
         string FilterId,
@@ -57,6 +61,14 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
                     ? b
                     : deviceEndpoints.Any(e => e.IsActive);
 
+            Logger.Debug(
+                "Paired device {Name}: container {ContainerId}, connected {IsConnected}, {EndpointCount} audio endpoint(s)",
+                info.Name,
+                containerId,
+                isConnected,
+                deviceEndpoints.Count
+            );
+
             devices.Add(new PairedDevice(info.Name, isConnected, FilterIds(deviceEndpoints)));
         }
 
@@ -69,6 +81,12 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
                 .GroupBy(e => e.Name!)
         )
         {
+            Logger.Debug(
+                "Unmatched Bluetooth endpoints grouped as {Name}: {FilterIds}",
+                group.Key,
+                FilterIds(group)
+            );
+
             devices.Add(new PairedDevice(group.Key, group.Any(e => e.IsActive), FilterIds(group)));
         }
 
@@ -118,6 +136,9 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
                     0,
                     out _
                 );
+
+                Logger.Debug("KsProperty on {FilterId} returned 0x{HResult:X8}", filterId, hr);
+
                 if (hr >= 0)
                 {
                     succeeded++;
@@ -129,8 +150,22 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
             }
             catch (COMException ex)
             {
+                Logger.Debug(ex, "KsProperty on {FilterId} threw", filterId);
                 errors.Add($"0x{ex.HResult:X8}");
             }
+        }
+
+        Logger.Information(
+            "{Request} for {Device}: {Succeeded} of {Total} filter(s) accepted",
+            propertyId == KsBluetoothAudio.OneShotReconnect ? "Reconnect" : "Disconnect",
+            device.Name,
+            succeeded,
+            device.AudioFilterIds.Count
+        );
+
+        if (errors.Count > 0)
+        {
+            Logger.Warning("Rejected with HRESULT(s) {Errors}", errors.Distinct());
         }
 
         if (succeeded == 0)
@@ -179,6 +214,15 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
             var containerId = ReadGuid(store, PropertyKeys.DeviceContainerId);
             var name = ReadString(store, PropertyKeys.DeviceInterfaceFriendlyName);
 
+            Logger.Debug(
+                "Endpoint {Name}: filter {FilterId}, container {ContainerId}, state {State}, Bluetooth filter {IsBluetoothFilter}",
+                name,
+                filterId,
+                containerId,
+                state,
+                IsBluetoothFilter(filterId)
+            );
+
             endpoints.Add(
                 new AudioEndpoint(
                     filterId,
@@ -205,8 +249,9 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
             connector.GetDeviceIdConnectedTo(out var filterId);
             return filterId;
         }
-        catch (COMException)
+        catch (COMException ex)
         {
+            Logger.Debug("Endpoint topology unavailable: 0x{HResult:X8}", ex.HResult);
             return null;
         }
     }
@@ -240,8 +285,15 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
                 NativeMethods.PropVariantClear(ref value);
             }
         }
-        catch (COMException)
+        catch (COMException ex)
         {
+            Logger.Debug(
+                "Property {FormatId},{PropertyId} unavailable: 0x{HResult:X8}",
+                key.FormatId,
+                key.PropertyId,
+                ex.HResult
+            );
+
             return default;
         }
     }

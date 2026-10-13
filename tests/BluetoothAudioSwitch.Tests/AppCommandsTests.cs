@@ -53,6 +53,15 @@ public class AppCommandsTests
     }
 
     [Fact]
+    public async Task Verbose_is_accepted_after_a_subcommand()
+    {
+        var (exitCode, _, _) = await RunAsync("connect", "kitchen", "--verbose");
+
+        Assert.Equal(ExitCodes.Success, exitCode);
+        Assert.Equal(["connect Kitchen Speaker"], _bluetooth.Calls);
+    }
+
+    [Fact]
     public async Task Unknown_device_returns_not_found()
     {
         var (exitCode, _, error) = await RunAsync("connect", "AirPods");
