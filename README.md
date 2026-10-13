@@ -1,6 +1,6 @@
 # Bluetooth Audio Switch
 
-Use it to make desktop or Start Menu shortcuts that switch your headphones with one click, so you don't have to go through Settings > Bluetooth & devices.
+Connect/disconnect paired Bluetooth audio devices from the command line or a desktop shortcut.
 
 ## Usage
 
@@ -45,13 +45,13 @@ A Start Menu shortcut can also be pinned to Start or the taskbar. You can give i
 
 ### Exit codes
 
-| Code | Meaning |
-| ---- | ------- |
-| 0 | Success |
-| 1 | Invalid command line |
-| 2 | No paired audio device matches the name |
-| 3 | The name matches more than one device |
-| 4 | Windows rejected the connect/disconnect request |
+| Code | Meaning                                         |
+| ---- | ----------------------------------------------- |
+| 0    | Success                                         |
+| 1    | Invalid command line                            |
+| 2    | No paired audio device matches the name         |
+| 3    | The name matches more than one device           |
+| 4    | Windows rejected the connect/disconnect request |
 
 `connect` and `disconnect` send the request to Windows and return straight away. The connection itself takes a few seconds, and the device must be switched on and in range (earbuds out of their case).
 
