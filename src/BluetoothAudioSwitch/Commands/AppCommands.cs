@@ -101,6 +101,7 @@ internal static class AppCommands
                     error,
                     cancellationToken
                 );
+
                 if (device is null)
                 {
                     return exitCode;
@@ -138,10 +139,12 @@ internal static class AppCommands
     )
     {
         var nameArgument = NameArgument();
+
         var desktop = new Option<bool>("--desktop", "-d")
         {
             Description = "Create shortcuts on the desktop (default).",
         };
+
         var startMenu = new Option<bool>("--start-menu", "-s")
         {
             Description = "Create shortcuts in the Start Menu.",
@@ -169,6 +172,7 @@ internal static class AppCommands
                     error,
                     cancellationToken
                 );
+
                 if (device is null)
                 {
                     return exitCode;
@@ -215,6 +219,7 @@ internal static class AppCommands
         var audioDevices = (await bluetooth.GetPairedDevicesAsync(cancellationToken))
             .Where(d => d.IsAudio)
             .ToList();
+
         var result = DeviceNameMatcher.Match(audioDevices, d => d.Name, name);
 
         switch (result.Kind)

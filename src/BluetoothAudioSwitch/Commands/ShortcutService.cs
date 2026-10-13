@@ -55,8 +55,10 @@ internal sealed class ShortcutService : IShortcutService
         using var resource =
             typeof(ShortcutService).Assembly.GetManifestResourceStream($"Icons.{icon}.ico")
             ?? throw new ArgumentException($"No embedded icon named '{icon}'.", nameof(icon));
+
         using var buffer = new MemoryStream();
         resource.CopyTo(buffer);
+
         var bytes = buffer.ToArray();
 
         Directory.CreateDirectory(IconFolder);

@@ -67,6 +67,7 @@ internal static class DeviceNameMatcher
     {
         var builder = new StringBuilder(value.Length);
         var lastWasSpace = true;
+
         foreach (var ch in value.Trim())
         {
             var c = ch switch

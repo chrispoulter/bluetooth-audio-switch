@@ -147,6 +147,7 @@ public class AppCommandsTests
 
         var exitCode = await root.Parse(args)
             .InvokeAsync(new InvocationConfiguration { Output = output, Error = error });
+
         return (exitCode, output.ToString(), error.ToString());
     }
 
