@@ -20,14 +20,15 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
         string FilterId,
         Guid? ContainerId,
         string? Name,
-        bool IsActive
+        bool IsActive,
+        bool IsBluetoothFilter
     );
 
     public async Task<IReadOnlyList<PairedDevice>> GetPairedDevicesAsync(
         CancellationToken cancellationToken = default
     )
     {
-        var endpoints = GetBluetoothAudioEndpoints();
+        var endpoints = GetAudioEndpoints();
 
         var paired = await DeviceInformation
             .FindAllAsync(
@@ -59,12 +60,12 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
             devices.Add(new PairedDevice(info.Name, isConnected, FilterIds(deviceEndpoints)));
         }
 
-        // Audio endpoints whose container could not be matched to a paired device
-        // are still usable; group them by the name Core Audio reports.
+        // Bluetooth audio endpoints whose container could not be matched to a paired
+        // device are still usable; group them by the name Core Audio reports.
         foreach (
             var group in endpoints
                 .Except(claimed)
-                .Where(e => e.Name is not null)
+                .Where(e => e.IsBluetoothFilter && e.Name is not null)
                 .GroupBy(e => e.Name!)
         )
         {
@@ -147,7 +148,13 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
         return (IMMDeviceEnumerator)Activator.CreateInstance(type)!;
     }
 
-    private static List<AudioEndpoint> GetBluetoothAudioEndpoints()
+    /// <summary>
+    /// All audio endpoints that could belong to a Bluetooth device. Endpoints are
+    /// matched to paired devices by container ID rather than filter path, because
+    /// with Bluetooth audio offload (e.g. Intel SST) the Hands-Free endpoints are
+    /// wired to the audio controller's filter, not a BTHENUM/BTHHFENUM one.
+    /// </summary>
+    private static List<AudioEndpoint> GetAudioEndpoints()
     {
         var enumerator = CreateEnumerator();
         enumerator.EnumAudioEndpoints(
@@ -162,7 +169,7 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
         {
             collection.Item(i, out var endpoint);
             var filterId = GetConnectedFilterId(endpoint);
-            if (filterId is null || !IsBluetoothFilter(filterId))
+            if (filterId is null)
             {
                 continue;
             }
@@ -173,7 +180,13 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
             var name = ReadString(store, PropertyKeys.DeviceInterfaceFriendlyName);
 
             endpoints.Add(
-                new AudioEndpoint(filterId, containerId, name, state == DeviceState.Active)
+                new AudioEndpoint(
+                    filterId,
+                    containerId,
+                    name,
+                    state == DeviceState.Active,
+                    IsBluetoothFilter(filterId)
+                )
             );
         }
 
