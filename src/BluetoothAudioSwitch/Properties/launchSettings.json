@@ -13,10 +13,6 @@
       "commandName": "Project",
       "commandLineArgs": "disconnect \"Chris's Buds4\""
     },
-    "toggle": {
-      "commandName": "Project",
-      "commandLineArgs": "toggle \"Chris's Buds4\""
-    },
     "help": {
       "commandName": "Project",
       "commandLineArgs": "--help"

@@ -1,9 +1,5 @@
 # Bluetooth Audio Switch
 
-[![CI](https://github.com/chrispoulter/bluetooth-audio-switch/actions/workflows/ci.yml/badge.svg)](https://github.com/chrispoulter/bluetooth-audio-switch/actions/workflows/ci.yml)
-
-`btaudio` is a small Windows command-line tool that connects or disconnects paired Bluetooth audio devices (headphones, earbuds, speakers) by name.
-
 Use it to make desktop or Start Menu shortcuts that switch your headphones with one click, so you don't have to go through Settings > Bluetooth & devices.
 
 ## Usage
@@ -13,7 +9,6 @@ btaudio list                         List paired Bluetooth audio devices
 btaudio list --all                   ...including non-audio devices (mice, keyboards, ...)
 btaudio connect "Chris's Buds4"      Connect a device
 btaudio disconnect "Chris's Buds4"   Disconnect a device
-btaudio toggle "Chris's Buds4"       Connect if disconnected, otherwise disconnect
 btaudio shortcut "Chris's Buds4"     Create Connect/Disconnect shortcuts on the desktop
 btaudio --help                       Show help (works for every command: btaudio connect --help)
 ```
@@ -41,10 +36,9 @@ If a name matches more than one device, `btaudio` lists the matches and does not
 btaudio shortcut "Chris's Buds4"                      Desktop: "Connect Chris's Buds4" + "Disconnect Chris's Buds4"
 btaudio shortcut "Chris's Buds4" --start-menu         Start Menu > Bluetooth Audio Switch
 btaudio shortcut "Chris's Buds4" --desktop --start-menu
-btaudio shortcut "Chris's Buds4" --toggle             A single "Toggle Chris's Buds4" shortcut
 ```
 
-The shortcuts run `btaudio.exe` minimised. Each one has a Bluetooth icon with a badge for its action: a green tick for Connect, a red cross for Disconnect and orange arrows for Toggle. The icons are saved to `%LOCALAPPDATA%\Bluetooth Audio Switch\Icons\`. The shortcuts point to wherever `btaudio.exe` was when you created them, so put the exe somewhere permanent first (for example `%LOCALAPPDATA%\Programs\btaudio\`).
+The shortcuts run `btaudio.exe` minimised. Each one has a Bluetooth icon with a badge for its action: a green tick for Connect and a red cross for Disconnect. The icons are saved to `%LOCALAPPDATA%\Bluetooth Audio Switch\Icons\`. The shortcuts point to wherever `btaudio.exe` was when you created them, so put the exe somewhere permanent first (for example `%LOCALAPPDATA%\Programs\btaudio\`).
 
 A Start Menu shortcut can also be pinned to Start or the taskbar. You can give it a keyboard shortcut in its Properties dialog.
 
@@ -93,14 +87,14 @@ dotnet publish src/BluetoothAudioSwitch -c Release -r win-x64 --self-contained -
 
 ### Visual Studio 2026
 
-Open `BluetoothAudioSwitch.slnx`. Debug profiles (`list`, `connect`, `disconnect`, `toggle`, `help`) are in the run button drop-down. They're defined in `src/BluetoothAudioSwitch/Properties/launchSettings.json`; change the device name there.
+Open `BluetoothAudioSwitch.slnx`. Debug profiles (`list`, `connect`, `disconnect`, `help`) are in the run button drop-down. They're defined in `src/BluetoothAudioSwitch/Properties/launchSettings.json`; change the device name there.
 
 ### VS Code
 
 Install the recommended **C# Dev Kit** extension. Then:
 
 - **Ctrl+Shift+B**: build
-- **Run and Debug** (F5): choose `btaudio list`, `connect`, `disconnect` or `toggle`. You'll be asked for the device name.
+- **Run and Debug** (F5): choose `btaudio list`, `connect` or `disconnect`. You'll be asked for the device name.
 - **Tasks: Run Task**: `test` or `publish`
 
 ### Formatting

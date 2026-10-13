@@ -24,12 +24,6 @@ internal static class AppCommands
                 bluetooth,
                 ConnectionAction.Disconnect
             ),
-            BuildConnectionCommand(
-                "toggle",
-                "Connect the device if it is disconnected, otherwise disconnect it.",
-                bluetooth,
-                ConnectionAction.Toggle
-            ),
             BuildShortcut(bluetooth, shortcuts),
         };
 
@@ -40,7 +34,6 @@ internal static class AppCommands
     {
         Connect,
         Disconnect,
-        Toggle,
     }
 
     private static Argument<string> NameArgument() =>
@@ -113,16 +106,9 @@ internal static class AppCommands
                     return exitCode;
                 }
 
-                var connect = action switch
-                {
-                    ConnectionAction.Connect => true,
-                    ConnectionAction.Disconnect => false,
-                    _ => !device.IsConnected,
-                };
-
                 try
                 {
-                    if (connect)
+                    if (action == ConnectionAction.Connect)
                     {
                         bluetooth.Connect(device);
                         output.WriteLine($"Connecting to {device.Name}...");
@@ -160,10 +146,6 @@ internal static class AppCommands
         {
             Description = "Create shortcuts in the Start Menu.",
         };
-        var toggle = new Option<bool>("--toggle", "-t")
-        {
-            Description = "Create a single Toggle shortcut instead of Connect and Disconnect.",
-        };
 
         var command = new Command(
             "shortcut",
@@ -173,7 +155,6 @@ internal static class AppCommands
             nameArgument,
             desktop,
             startMenu,
-            toggle,
         };
 
         command.SetAction(
@@ -204,9 +185,7 @@ internal static class AppCommands
                     folders.Add(shortcuts.StartMenuFolder);
                 }
 
-                string[] verbs = parseResult.GetValue(toggle)
-                    ? ["toggle"]
-                    : ["connect", "disconnect"];
+                string[] verbs = ["connect", "disconnect"];
                 var quotedName = $"\"{device.Name.Replace("\"", string.Empty)}\"";
 
                 foreach (var folder in folders)

@@ -12,7 +12,7 @@
     <RootNamespace>BluetoothAudioSwitch</RootNamespace>
     <Description>Connect and disconnect paired Bluetooth audio devices from the command line.</Description>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <ApplicationIcon>Icons\toggle.ico</ApplicationIcon>
+    <ApplicationIcon>Icons\app.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +20,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Icons\*.ico" LogicalName="Icons.%(Filename)%(Extension)" />
+    <EmbeddedResource
+      Include="Icons\*.ico"
+      Exclude="Icons\app.ico"
+      LogicalName="Icons.%(Filename)%(Extension)"
+    />
   </ItemGroup>
 
   <ItemGroup>

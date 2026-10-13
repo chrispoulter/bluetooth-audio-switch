@@ -6,7 +6,7 @@ internal interface IShortcutService
 {
     /// <summary>
     /// Creates a shortcut that runs btaudio with the given arguments and returns its path.
-    /// <paramref name="icon"/> names one of the embedded icons: connect, disconnect or toggle.
+    /// <paramref name="icon"/> names one of the embedded icons: connect or disconnect.
     /// </summary>
     string Create(string folder, string title, string arguments, string icon);
 

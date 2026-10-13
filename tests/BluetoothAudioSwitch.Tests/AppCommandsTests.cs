@@ -52,16 +52,6 @@ public class AppCommandsTests
         Assert.Equal(["disconnect Kitchen Speaker"], _bluetooth.Calls);
     }
 
-    [Theory]
-    [InlineData("Chris's Buds4", "connect Chris's Buds4")]
-    [InlineData("Kitchen Speaker", "disconnect Kitchen Speaker")]
-    public async Task Toggle_flips_connection_state(string name, string expectedCall)
-    {
-        await RunAsync("toggle", name);
-
-        Assert.Equal([expectedCall], _bluetooth.Calls);
-    }
-
     [Fact]
     public async Task Unknown_device_returns_not_found()
     {
@@ -131,12 +121,20 @@ public class AppCommandsTests
     }
 
     [Fact]
-    public async Task Shortcut_toggle_in_start_menu()
+    public async Task Shortcut_in_start_menu()
     {
-        await RunAsync("shortcut", "buds", "--start-menu", "--toggle");
+        await RunAsync("shortcut", "buds", "--start-menu");
 
         Assert.Equal(
-            [("start-menu", "Toggle Chris's Buds4", "toggle \"Chris's Buds4\"", "toggle")],
+            [
+                ("start-menu", "Connect Chris's Buds4", "connect \"Chris's Buds4\"", "connect"),
+                (
+                    "start-menu",
+                    "Disconnect Chris's Buds4",
+                    "disconnect \"Chris's Buds4\"",
+                    "disconnect"
+                ),
+            ],
             _shortcuts.Created
         );
     }
