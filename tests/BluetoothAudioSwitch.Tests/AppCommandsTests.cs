@@ -155,7 +155,10 @@ public class AppCommandsTests
         var root = AppCommands.Build(_bluetooth, _shortcuts);
 
         var exitCode = await root.Parse(args)
-            .InvokeAsync(new InvocationConfiguration { Output = output, Error = error });
+            .InvokeAsync(
+                new InvocationConfiguration { Output = output, Error = error },
+                TestContext.Current.CancellationToken
+            );
 
         return (exitCode, output.ToString(), error.ToString());
     }
