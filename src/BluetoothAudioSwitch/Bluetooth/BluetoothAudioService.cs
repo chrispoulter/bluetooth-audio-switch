@@ -282,7 +282,8 @@ internal sealed class BluetoothAudioService : IBluetoothAudioService
             }
             finally
             {
-                NativeMethods.PropVariantClear(ref value);
+                // Best-effort cleanup: nothing useful to do if clearing fails.
+                _ = NativeMethods.PropVariantClear(ref value);
             }
         }
         catch (COMException ex)

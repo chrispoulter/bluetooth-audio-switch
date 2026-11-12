@@ -234,50 +234,66 @@ internal static class AppCommands
             .Where(d => d.IsAudio)
             .ToList();
 
-        var result = DeviceNameMatcher.Match(audioDevices, d => d.Name, name);
-
-        switch (result.Kind)
+        return DeviceNameMatcher.Match(audioDevices, d => d.Name, name) switch
         {
-            case MatchKind.Found:
-                Logger.Information("'{Query}' matched {Device}", name, result.Match!.Name);
-                return (result.Match, ExitCodes.Success);
+            MatchFound<PairedDevice>(var device) => OnFound(name, device),
+            AmbiguousMatch<PairedDevice>(var candidates) => OnAmbiguous(name, candidates, error),
+            NoMatch => OnNotFound(name, audioDevices, error),
+        };
+    }
 
-            case MatchKind.Ambiguous:
-                Logger.Warning(
-                    "'{Query}' is ambiguous: {Candidates}",
-                    name,
-                    result.Candidates.Select(c => c.Name)
-                );
+    private static (PairedDevice? Device, int ExitCode) OnFound(string name, PairedDevice device)
+    {
+        Logger.Information("'{Query}' matched {Device}", name, device.Name);
+        return (device, ExitCodes.Success);
+    }
 
-                error.WriteLine($"'{name}' matches more than one device:");
-                foreach (var candidate in result.Candidates)
-                {
-                    error.WriteLine($"  {candidate.Name}");
-                }
+    private static (PairedDevice? Device, int ExitCode) OnAmbiguous(
+        string name,
+        IReadOnlyList<PairedDevice> candidates,
+        TextWriter error
+    )
+    {
+        Logger.Warning(
+            "'{Query}' is ambiguous: {Candidates}",
+            name,
+            candidates.Select(c => c.Name)
+        );
 
-                error.WriteLine("Use a more specific name.");
-                return (null, ExitCodes.AmbiguousName);
-
-            default:
-                Logger.Warning(
-                    "'{Query}' matched no audio device. Paired audio devices: {Devices}",
-                    name,
-                    audioDevices.Select(d => d.Name)
-                );
-
-                error.WriteLine($"No paired Bluetooth audio device matches '{name}'.");
-
-                if (audioDevices.Count > 0)
-                {
-                    error.WriteLine("Paired audio devices:");
-
-                    foreach (var device in audioDevices)
-                    {
-                        error.WriteLine($"  {device.Name}");
-                    }
-                }
-
-                return (null, ExitCodes.DeviceNotFound);
+        error.WriteLine($"'{name}' matches more than one device:");
+        foreach (var candidate in candidates)
+        {
+            error.WriteLine($"  {candidate.Name}");
         }
+
+        error.WriteLine("Use a more specific name.");
+        return (null, ExitCodes.AmbiguousName);
+    }
+
+    private static (PairedDevice? Device, int ExitCode) OnNotFound(
+        string name,
+        IReadOnlyList<PairedDevice> audioDevices,
+        TextWriter error
+    )
+    {
+        Logger.Warning(
+            "'{Query}' matched no audio device. Paired audio devices: {Devices}",
+            name,
+            audioDevices.Select(d => d.Name)
+        );
+
+        error.WriteLine($"No paired Bluetooth audio device matches '{name}'.");
+
+        if (audioDevices.Count > 0)
+        {
+            error.WriteLine("Paired audio devices:");
+
+            foreach (var device in audioDevices)
+            {
+                error.WriteLine($"  {device.Name}");
+            }
+        }
+
+        return (null, ExitCodes.DeviceNotFound);
     }
 }
