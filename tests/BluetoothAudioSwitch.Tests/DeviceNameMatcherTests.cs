@@ -25,8 +25,8 @@ public class DeviceNameMatcherTests
     {
         var result = DeviceNameMatcher.Match(Names, n => n, query);
 
-        Assert.Equal(MatchKind.Found, result.Kind);
-        Assert.Equal(expected, result.Match);
+        var found = Assert.IsType<MatchFound<string>>(result.Value);
+        Assert.Equal(expected, found.Match);
     }
 
     [Fact]
@@ -34,8 +34,8 @@ public class DeviceNameMatcherTests
     {
         var result = DeviceNameMatcher.Match(Names, n => n, "speaker");
 
-        Assert.Equal(MatchKind.Ambiguous, result.Kind);
-        Assert.Equal(["Kitchen Speaker", "Office Speaker"], result.Candidates);
+        var ambiguous = Assert.IsType<AmbiguousMatch<string>>(result.Value);
+        Assert.Equal(["Kitchen Speaker", "Office Speaker"], ambiguous.Candidates);
     }
 
     [Fact]
@@ -43,8 +43,8 @@ public class DeviceNameMatcherTests
     {
         var result = DeviceNameMatcher.Match(["Buds", "Chris's Buds"], n => n, "buds");
 
-        Assert.Equal(MatchKind.Found, result.Kind);
-        Assert.Equal("Buds", result.Match);
+        var found = Assert.IsType<MatchFound<string>>(result.Value);
+        Assert.Equal("Buds", found.Match);
     }
 
     [Theory]
@@ -55,7 +55,6 @@ public class DeviceNameMatcherTests
     {
         var result = DeviceNameMatcher.Match(Names, n => n, query);
 
-        Assert.Equal(MatchKind.NotFound, result.Kind);
-        Assert.Null(result.Match);
+        Assert.IsType<NoMatch>(result.Value);
     }
 }

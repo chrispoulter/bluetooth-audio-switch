@@ -2,14 +2,13 @@ using System.Text;
 
 namespace BluetoothAudioSwitch.Bluetooth;
 
-internal enum MatchKind
-{
-    Found,
-    NotFound,
-    Ambiguous,
-}
+internal sealed record MatchFound<T>(T Match);
 
-internal sealed record MatchResult<T>(MatchKind Kind, T? Match, IReadOnlyList<T> Candidates);
+internal sealed record AmbiguousMatch<T>(IReadOnlyList<T> Candidates);
+
+internal sealed record NoMatch;
+
+internal union MatchResult<T>(MatchFound<T>, AmbiguousMatch<T>, NoMatch);
 
 /// <summary>
 /// Forgiving device-name matching, so shortcuts and typed commands work with
@@ -32,7 +31,7 @@ internal static class DeviceNameMatcher
         var normalizedQuery = Normalize(query);
         if (normalizedQuery.Length == 0)
         {
-            return new MatchResult<T>(MatchKind.NotFound, default, []);
+            return new NoMatch();
         }
 
         var queryWords = Words(normalizedQuery);
@@ -51,16 +50,16 @@ internal static class DeviceNameMatcher
             var matches = list.Where(item => tier(Normalize(getName(item)))).ToList();
             if (matches.Count == 1)
             {
-                return new MatchResult<T>(MatchKind.Found, matches[0], matches);
+                return new MatchFound<T>(matches[0]);
             }
 
             if (matches.Count > 1)
             {
-                return new MatchResult<T>(MatchKind.Ambiguous, default, matches);
+                return new AmbiguousMatch<T>(matches);
             }
         }
 
-        return new MatchResult<T>(MatchKind.NotFound, default, []);
+        return new NoMatch();
     }
 
     public static string Normalize(string value)

@@ -35,8 +35,7 @@ internal sealed class ShortcutService : IShortcutService
 
     public string Create(string folder, string title, string arguments, string icon)
     {
-        var exePath =
-            Environment.ProcessPath
+        var exePath = Environment.ProcessPath
             ?? throw new InvalidOperationException("Unable to determine the path of btaudio.exe.");
 
         Directory.CreateDirectory(folder);
@@ -52,9 +51,9 @@ internal sealed class ShortcutService : IShortcutService
     /// </summary>
     private static string ExtractIcon(string icon)
     {
-        using var resource =
-            typeof(ShortcutService).Assembly.GetManifestResourceStream($"Icons.{icon}.ico")
-            ?? throw new ArgumentException($"No embedded icon named '{icon}'.", nameof(icon));
+        using var resource = typeof(ShortcutService).Assembly.GetManifestResourceStream(
+            $"Icons.{icon}.ico"
+        ) ?? throw new ArgumentException($"No embedded icon named '{icon}'.", nameof(icon));
 
         using var buffer = new MemoryStream();
         resource.CopyTo(buffer);

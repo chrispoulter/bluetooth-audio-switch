@@ -80,7 +80,7 @@ Requires Windows 10 version 2004 (build 19041) or later.
 
 ## Building
 
-Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download).
+Requires the [.NET 11 SDK](https://dotnet.microsoft.com/download).
 
 ```powershell
 dotnet build
@@ -89,7 +89,7 @@ dotnet run --project src/BluetoothAudioSwitch -- list
 
 # Self-contained single-file exe
 dotnet publish src/BluetoothAudioSwitch -c Release -r win-x64 --self-contained -p:PublishSingleFile=true
-# Output: src/BluetoothAudioSwitch/bin/Release/net10.0-windows10.0.19041.0/win-x64/publish/btaudio.exe
+# Output: src/BluetoothAudioSwitch/bin/Release/net11.0-windows10.0.19041.0/win-x64/publish/btaudio.exe
 ```
 
 ### Visual Studio 2026

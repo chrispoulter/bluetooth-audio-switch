@@ -22,7 +22,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: 11.0.x
 
       - uses: actions/cache@v5
         with:
@@ -64,7 +64,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: 11.0.x
 
       - uses: actions/cache@v5
         with:
@@ -89,7 +89,7 @@ jobs:
       - name: Package
         shell: pwsh
         env:
-          PUBLISH_DIR: src/BluetoothAudioSwitch/bin/Release/net10.0-windows10.0.19041.0/${{ matrix.rid }}/publish
+          PUBLISH_DIR: src/BluetoothAudioSwitch/bin/Release/net11.0-windows10.0.19041.0/${{ matrix.rid }}/publish
         run: |
           Compress-Archive -Path "$env:PUBLISH_DIR/*", README.md, LICENSE -DestinationPath btaudio-${{ steps.version.outputs.version }}-${{ matrix.rid }}.zip
 
